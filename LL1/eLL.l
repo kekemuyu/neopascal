@@ -5,7 +5,7 @@ T->F T1
 T1->op2 F T1
 T1->$
 F->( E )
-F->-F
+F->- F
 F->I
 I->var
 I->const

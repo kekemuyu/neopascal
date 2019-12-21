@@ -26,40 +26,97 @@ func init() {
 	// extendLLWriteToFile("eLL.l", decodeLL("LL.l"))
 }
 
+var cons []string
+
 func main() {
 	express := getExpression("eLL.l")
+
+	firsts := make(map[LLesp][]string)
 	for _, v := range express {
-		fmt.Printf("%v\n", v)
+		esps := removeElement(v, express)
+
+		bs := strings.Split(v.Body, " ")
+		// fmt.Println(v, esps)
+		cons = make([]string, 0)
+		searchfirst(bs[0], esps)
+		firsts[v] = removeElementByMap(cons)
+
 	}
+
+	// searchfirst("T", express)
+
+	// cons2 := removeElementByMap(cons)
+	for k, v := range firsts {
+		fmt.Println(k, v)
+	}
+
 }
 
-//第一次查找
-func searchfirst(input string, esps []LLesp) interface{} {
-	for _, v := range esps {
-		if v.Head == input {
-			return v
+func removeElement(ele LLesp, slc []LLesp) []LLesp {
+	rel := make([]LLesp, 0)
+	for _, v := range slc {
+		if ele != v {
+
+			rel = append(rel, v)
 		}
 	}
-	return input
+
+	return rel
+}
+
+//利用map给数组去重和去除$
+func removeElementByMap(slc []string) []string {
+	temp := make(map[string]int)
+	rel := make([]string, 0)
+	for k, v := range slc {
+		lens := len(temp)
+		temp[v] = k
+		if len(temp) != lens {
+			if v == "$" {
+				continue
+			}
+			rel = append(rel, v)
+		}
+	}
+
+	return rel
+}
+
+func searchfirst(input string, esps []LLesp) {
+	for _, v := range esps {
+		if v.Head == input {
+			bs := strings.Split(v.Body, " ")
+			for _, b := range bs {
+				if !isProducer(b, esps) {
+					cons = append(cons, b)
+					// fmt.Println(v, b)
+					break
+				} else if b == input {
+					break
+				} else {
+					// fmt.Println("searchfirst", v, b)
+					searchfirst(b, esps)
+				}
+			}
+		} else {
+			cons = append(cons, input)
+		}
+	}
+
+}
+
+//是非终结符
+func isProducer(input string, esps []LLesp) bool {
+	for _, v := range esps {
+		if v.Head == input {
+			return true
+		}
+	}
+	return false
 }
 
 //遍历非终结符,得到所有终结符
 func searchProducer(esp LLesp) {
-	esps := getExpression("eLL.l")
-	firsts := make(map[LLesp][]string)
-	for _, v := range esps {
-		bs := strings.Split(v.Body, " ")
-		re := searchfirst(bs[0], esps)
-		for {
-			switch re.(type) {
-			case string:
-				firsts[v] = append(firsts[v], re.(string))
-				break
-			case LLesp:
-				re = searchfirst(re.(LLesp).Body[], esps)
-			}
-		}
-	}
 
 }
 
